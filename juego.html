@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reto Goo · Juego de 10 niveles</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;display:flex;justify-content:center;padding:16px}
+.app{width:100%;max-width:620px;background:#121f3d;border:1px solid #2c3a5e;border-radius:20px;overflow:hidden}
+.top{background:linear-gradient(135deg,#121f3d,#1a73e8);padding:20px;text-align:center}
+.top .tag{display:inline-block;background:#97ca02;color:#121f3d;font-weight:800;font-size:.75rem;padding:4px 12px;border-radius:20px}
+.top h1{margin:8px 0 4px;font-size:1.5rem}
+.top p{opacity:.85;font-size:.88rem}
+.hud{display:flex;gap:8px;padding:12px;background:#0b1530;font-size:.82rem;flex-wrap:wrap}
+.pill{background:#1e293b;border-radius:20px;padding:6px 12px;font-weight:700}
+.pill b{color:#97ca02}
+.tbar{height:10px;background:#1e293b}
+.tbar>div{height:100%;width:0;background:#97ca02;transition:width .3s}
+.body{padding:20px}
+.card{background:#fff;color:#1e2430;border-radius:14px;padding:20px}
+.card h2{font-size:1.15rem;margin-bottom:8px}
+.card p{font-size:.92rem;color:#475569}
+input[type=text]{width:100%;padding:12px;border-radius:10px;border:2px solid #dadce0;margin:12px 0;font-size:1rem}
+.btn{border:none;border-radius:10px;padding:13px 18px;font-weight:800;cursor:pointer;font-size:.95rem;width:100%;margin-top:8px}
+.btn-g{background:#97ca02;color:#121f3d}
+.btn-b{background:#1a73e8;color:#fff}
+.btn-d{background:#1e293b;color:#fff}
+.opt{display:block;width:100%;text-align:left;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;margin:8px 0;cursor:pointer;font-size:.92rem;color:#1e2430}
+.opt:hover{border-color:#1a73e8}
+.opt.ok{background:#dcfce7;border-color:#16a34a}
+.opt.bad{background:#fee2e2;border-color:#dc2626}
+.opt:disabled{opacity:.9;cursor:default}
+.timer{font-weight:800;color:#f59e0b}
+.exp{background:#e8f0fe;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:.85rem;color:#1e40af;display:none}
+.lvl{font-size:.8rem;color:#64748b;font-weight:700}
+.rank{background:#0b1530;border-radius:10px;padding:14px;margin-top:12px;font-size:.95rem;color:#fff}
+.rank b{color:#97ca02}
+.rank ol{list-style:none;padding:0;margin:8px 0 0}
+.rank li{background:#1e293b;color:#fff;font-weight:700;padding:10px 12px;border-radius:8px;margin:6px 0;display:flex;justify-content:space-between;gap:8px}
+.rank li:first-child{background:#97ca02;color:#121f3d}
+.share-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.share-row .btn{width:auto;flex:1;min-width:140px}
+.hidden{display:none}
+footer{text-align:center;font-size:.75rem;color:#64748b;padding:14px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top"><div class="tag">RETO GOO · EQUIPO MÓVIL</div><h1>🚚 Reto Goo: 10 niveles</h1><p>Primera y última milla · backend · isError + status. ¡Comparte y reta a tu equipo!</p></div>
+<div class="hud"><div class="pill">Nivel <b id="hLvl">–</b>/10</div><div class="pill">Puntos <b id="hPts">0</b></div><div class="pill">🔥 Racha <b id="hStreak">0</b></div><div class="pill">⏱ <b id="hTime">30</b>s</div></div>
+<div class="tbar"><div id="fill"></div></div>
+<div class="body">
+<div class="card" id="sStart">
+<h2>¿Cómo se juega?</h2>
+<p>• 10 casos de análisis.<br>• 30 seg por nivel.<br>• 100 pts + bonus de velocidad + bonus de racha.<br>• Al final obtienes tu puntaje, ranking local y link para compartir.</p>
+<input type="text" id="nick" maxlength="30" placeholder="Tu nombre (ej: Alejo Goo)">
+<button class="btn btn-g" id="bStart">▶ Empezar reto</button>
+<div class="rank" style="background:#f1f5f9;color:#0f172a;margin-top:12px"><b style="color:#0f172a">🔗 Para organizadores: link por persona</b>
+<p style="font-size:.82rem;color:#475569">Escribe un nombre y genera su link. Cada link guarda su resultado.</p>
+<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><input type="text" id="forWho" placeholder="Nombre del participante" style="flex:1;min-width:160px;margin:0"><button class="btn btn-b" id="bLink" style="width:auto;margin:0">Generar</button></div>
+<input type="text" id="linkOut" readonly placeholder="Aquí sale el link personal" style="margin-top:8px">
+<a href="index.html" style="display:block;text-align:center;margin-top:10px;font-size:.85rem;color:#1a73e8">← Volver al curso</a></div>
+</div>
+<div class="card hidden" id="sQuiz">
+<div class="lvl" id="qLvl">NIVEL 1</div>
+<h2 id="qTxt"></h2>
+<div id="qOpts"></div>
+<div class="exp" id="qExp"></div>
+<button class="btn btn-b hidden" id="bNext">Siguiente →</button>
+</div>
+<div class="card hidden" id="sEnd">
+<h2 id="eTitle">¡Reto completado!</h2>
+<p id="eScore"></p>
+<div class="rank"><b>🏆 Top local (este dispositivo)</b><ol id="eRank"></ol></div>
+<div class="share-row">
+<button class="btn btn-g" id="bShare">📤 Compartir mi puntaje</button>
+<button class="btn btn-b" id="bWpp" style="background:#25D366">🟢 Enviar por WhatsApp</button>
+<button class="btn btn-b" id="bCopy">🔗 Copiar link del juego</button>
+</div>
+<button class="btn btn-d" id="bRetry">🔄 Jugar de nuevo</button>
+<a href="index.html" style="display:block;text-align:center;margin-top:10px;font-size:.85rem;color:#1a73e8">← Repasar el curso</a>
+</div>
+</div>
+<footer>Reto Goo · un solo archivo, sin internet requerido · comparte el archivo juego.html o el link</footer>
+</div>
+<script>
+const Q=[
+{q:"Un aliado Goo dice: 'hoy solo hago traslados entre bodegas, eso es la esencia'. ¿Qué le corriges?",o:["Correcto, traslados es la esencia","La esencia es Recogidas (primera milla) y Entregas (última milla); traslados/droop son apoyo","La esencia es perfil y cotizador"],a:1,e:"Esencia: primera milla=Recogidas, última milla=Entregas. Traslados/Droop son apoyo."},
+{q:"En entrega ves mapa, tomas foto/firma y cobras con Wompi, pero falla la red al cobrar. ¿Flujo correcto?",o:["Marcar entregado sin cobrar","Registrar evidencia, guardar cobro pendiente offline y reintentar; no cerrarlo como pagado","Cancelar foto y firma"],a:1,e:"Evidencia + pago pendiente en Room (carga-offline) y reintento. Nunca cerrar como pagado sin confirmación."},
+{q:"Llega recolección internacional sin etiqueta y otra nacional con etiqueta. ¿Qué concluyes?",o:["Es imposible","Ambos válidos: hay nacionales e internacionales, con o sin etiqueta impresa","Solo internacionales llevan etiqueta"],a:1,e:"Recolecciones: nacionales e internacionales, con etiqueta impresa o sin ella."},
+{q:"Te piden imprimir factura electrónica y revisar por qué no imprime. ¿Dónde?",o:["En Apoyo: impresión de factura/guías e info técnica del dispositivo","En el mapa de entregas","En legalización de recogidas"],a:0,e:"Apoyo: imprime factura y guías, y muestra info técnica del dispositivo."},
+{q:"Debate: 'la carga llega sola' vs 'se consulta en tiempo real'. ¿Quién tiene razón?",o:["Llega sola","Se consulta en tiempo real vía Firebase (Firestore)","Llega por SMS"],a:1,e:"La carga de trabajo se consulta en tiempo real vía Firebase, no llega sola."},
+{q:"Necesitas (A) ver ciudades para cotizar y (B) crear oportunidad de recogida. ¿Métodos?",o:["A=POST y B=GET","A=GET (leer) y B=POST (crear)","Ambos sin red"],a:1,e:"GET=leer (ciudades), POST=crear (oportunidad, entrega, pago)."},
+{q:"HTTP 200 con {isError:true, message:'guía inválida'}. ¿Qué hace la app?",o:["Avanza a éxito por el 200","Muestra message, no avanza, espera corrección","Cambia el token solo"],a:1,e:"Status dice si llegó; isError dice si el negocio aceptó. true → messageError y no avanza."},
+{q:"Recibes 401 y luego 404. ¿Interpretación?",o:["401=éxito, 404=parcial","401=no autorizado (renovar token) y 404=no encontrada","401=sin internet"],a:1,e:"401 renueva/inicia sesión, 404 la guía no existe, 400 dato inválido, 500 reintenta."},
+{q:"Token de 70 min y POST rechazado por autorización. ¿Causa?",o:["Token dura ~60 min en Authorization: Bearer; hay que renovarlo","Token permanente, falla el mapa","Falla la impresora"],a:0,e:"TokenManager ~60 min, header Bearer, reintenta 3 veces."},
+{q:"Aliado en sótano sin señal procesa entrega. ¿Qué hace la app?",o:["Pierde evidencia","Guarda en Room (carga-offline/guias_offline) y sincroniza con red","Marca fallida definitiva"],a:1,e:"Offline: guarda en Room y sincroniza después."}];
+const BACKEND_URL=""; // pega aquí tu URL de Apps Script / Firebase para guardar resultados
+let G=[],i=0,pts=0,hits=0,streak=0,timer=null,left=30,nick="Goo",t0=0;
+const $=id=>document.getElementById(id);
+const qp=new URLSearchParams(location.search);const pre=qp.get('u');
+if(pre){nick=pre.slice(0,30);window.addEventListener('DOMContentLoaded',()=>{$('nick').value=nick;});}
+function shuffle(a){for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a;}
+function buildGame(){G=shuffle([...Q]).map(x=>{const idx=shuffle(x.o.map((_,k)=>k));return{q:x.q,o:idx.map(k=>x.o[k]),a:idx.indexOf(x.a),e:x.e};});}
+function start(){nick=($('nick').value||pre||"Aliado Goo").trim().slice(0,30);i=0;pts=0;hits=0;streak=0;t0=Date.now();buildGame();
+$('sStart').classList.add('hidden');$('sEnd').classList.add('hidden');$('sQuiz').classList.remove('hidden');level();}
+function level(){clearInterval(timer);left=30;$('hTime').textContent=left;
+$('hLvl').textContent=(i+1);$('hPts').textContent=pts;$('hStreak').textContent=streak;
+$('fill').style.width=(i/G.length*100)+'%';
+$('qLvl').textContent="NIVEL "+(i+1)+" / "+G.length;$('qTxt').textContent=G[i].q;$('qExp').style.display='none';$('bNext').classList.add('hidden');
+$('qOpts').innerHTML=G[i].o.map((op,j)=>`<button class="opt" data-j="${j}">${op}</button>`).join('');
+document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.j));
+timer=setInterval(()=>{left--;$('hTime').textContent=left;if(left<=0)answer(-1);},1000);}
+function answer(j){clearInterval(timer);const q=G[i];
+document.querySelectorAll('.opt').forEach((b,k)=>{b.disabled=true;if(k===q.a)b.classList.add('ok');else if(k===j)b.classList.add('bad');});
+let ok=j===q.a,bonus=ok?Math.max(0,left)*2:0,racha=ok?Math.min(streak,5)*10:0;
+if(ok){pts+=100+bonus+racha;hits++;streak++;}else streak=0;
+$('hPts').textContent=pts;$('hStreak').textContent=streak;
+$('qExp').textContent=(ok?"✅ +"+(100+bonus+racha)+" pts. ":"❌ 0 pts. ")+q.e;$('qExp').style.display='block';
+$('bNext').textContent=i<G.length-1?"Siguiente →":"Ver resultado 🏁";$('bNext').classList.remove('hidden');}
+$('bNext').onclick=()=>{i++;if(i<G.length)level();else end();};
+function end(){$('sQuiz').classList.add('hidden');$('sEnd').classList.remove('hidden');$('fill').style.width='100%';
+let msg=pts>=1000?"🌟 Leyenda Goo":pts>=700?"🎉 Aliado experto":"💪 Sigue practicando";
+let secs=Math.round((Date.now()-t0)/1000);
+$('eTitle').textContent=msg;$('eScore').textContent=`${nick}: ${pts} pts · ${hits}/${G.length} aciertos · ${secs}s`;
+let r=JSON.parse(localStorage.getItem('gooRank')||'[]');r.push({n:nick,p:pts});r.sort((a,b)=>b.p-a.p);r=r.slice(0,5);
+localStorage.setItem('gooRank',JSON.stringify(r));$('eRank').innerHTML=r.map(x=>`<li><span>${x.n}</span><span>${x.p} pts</span></li>`).join('');
+saveResult({nombre:nick,puntos:pts,aciertos:hits,total:G.length,segundos:secs,fecha:new Date().toISOString(),origen:pre||"directo"});}
+async function saveResult(d){if(!BACKEND_URL)return;try{await fetch(BACKEND_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});}catch(e){}}
+function baseUrl(){return location.href.split('?')[0];}
+function shareText(){return `🚚 Hice ${pts} pts (${hits}/${G.length}) en el Reto Goo. ¿Me superas? Juega aquí: `+baseUrl();}
+$('bStart').onclick=start;$('bRetry').onclick=()=>{$('sEnd').classList.add('hidden');$('sStart').classList.remove('hidden');};
+$('bLink').onclick=async()=>{const w=($('forWho').value||"").trim();if(!w){alert('Escribe un nombre primero');return;}
+const link=baseUrl()+'?u='+encodeURIComponent(w);$('linkOut').value=link;
+try{await navigator.clipboard.writeText(link);}catch(e){}alert('Link para '+w+' copiado');};
+$('bShare').onclick=async()=>{const t=shareText();
+if(navigator.share){try{await navigator.share({title:'Reto Goo',text:t,url:location.href});}catch(e){}}
+else{try{await navigator.clipboard.writeText(t);alert('Puntaje copiado. Pégalo en WhatsApp.');}catch(e){alert(t);}}};
+$('bCopy').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);alert('Link copiado.');}catch(e){prompt('Copia el link:',location.href);}};
+$('bWpp').onclick=()=>{const t=shareText();window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');};
+</script>
+</body>
+</html>
