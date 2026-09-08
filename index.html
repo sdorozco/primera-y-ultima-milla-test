@@ -56,11 +56,7 @@ footer{text-align:center;font-size:.75rem;color:#64748b;padding:14px}
 <p>• 10 casos de análisis.<br>• 30 seg por nivel.<br>• 100 pts + bonus de velocidad + bonus de racha.<br>• Al final obtienes tu puntaje, ranking local y link para compartir.</p>
 <input type="text" id="nick" maxlength="30" placeholder="Tu nombre (ej: Alejo Goo)">
 <button class="btn btn-g" id="bStart">▶ Empezar reto</button>
-<div class="rank" style="background:#f1f5f9;color:#0f172a;margin-top:12px"><b style="color:#0f172a">🔗 Para organizadores: link por persona</b>
-<p style="font-size:.82rem;color:#475569">Escribe un nombre y genera su link. Cada link guarda su resultado.</p>
-<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><input type="text" id="forWho" placeholder="Nombre del participante" style="flex:1;min-width:160px;margin:0"><button class="btn btn-b" id="bLink" style="width:auto;margin:0">Generar</button></div>
-<input type="text" id="linkOut" readonly placeholder="Aquí sale el link personal" style="margin-top:8px">
-<a href="index.html" style="display:block;text-align:center;margin-top:10px;font-size:.85rem;color:#1a73e8">← Volver al curso</a></div>
+<a href="index.html" style="display:block;text-align:center;margin-top:10px;font-size:.85rem;color:#1a73e8">← Volver al curso</a>
 </div>
 <div class="card hidden" id="sQuiz">
 <div class="lvl" id="qLvl">NIVEL 1</div>
@@ -131,9 +127,9 @@ async function saveResult(d){if(!BACKEND_URL)return;try{await fetch(BACKEND_URL,
 function baseUrl(){return location.href.split('?')[0];}
 function shareText(){return `🚚 Hice ${pts} pts (${hits}/${G.length}) en el Reto Goo. ¿Me superas? Juega aquí: `+baseUrl();}
 $('bStart').onclick=start;$('bRetry').onclick=()=>{$('sEnd').classList.add('hidden');$('sStart').classList.remove('hidden');};
-$('bLink').onclick=async()=>{const w=($('forWho').value||"").trim();if(!w){alert('Escribe un nombre primero');return;}
-const link=baseUrl()+'?u='+encodeURIComponent(w);$('linkOut').value=link;
-try{await navigator.clipboard.writeText(link);}catch(e){}alert('Link para '+w+' copiado');};
+if($('bLink')){$('bLink').onclick=async()=>{const w=(($('forWho')||{}).value||"").trim();if(!w){alert('Escribe un nombre primero');return;}
+const link=baseUrl()+'?u='+encodeURIComponent(w);if($('linkOut'))$('linkOut').value=link;
+try{await navigator.clipboard.writeText(link);}catch(e){}alert('Link para '+w+' copiado');};}
 $('bShare').onclick=async()=>{const t=shareText();
 if(navigator.share){try{await navigator.share({title:'Reto Goo',text:t,url:location.href});}catch(e){}}
 else{try{await navigator.clipboard.writeText(t);alert('Puntaje copiado. Pégalo en WhatsApp.');}catch(e){alert(t);}}};
