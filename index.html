@@ -47,13 +47,13 @@ footer{text-align:center;font-size:.75rem;color:#64748b;padding:14px}
 </head>
 <body>
 <div class="app">
-<div class="top"><div class="tag">RETO GOO · EQUIPO MÓVIL</div><h1>🚚 Reto Goo: 10 niveles</h1><p>Primera y última milla · backend · isError + status. ¡Comparte y reta a tu equipo!</p></div>
+<div class="top"><div class="tag">RETO GOO · EQUIPO MÓVIL</div><h1>🚚 Reto Goo: 10 niveles</h1><p>Primera y última milla · operación y soporte · backend. ¡Comparte y reta a tu equipo!</p></div>
 <div class="hud"><div class="pill">Nivel <b id="hLvl">–</b>/10</div><div class="pill">Puntos <b id="hPts">0</b></div><div class="pill">🔥 Racha <b id="hStreak">0</b></div><div class="pill">⏱ <b id="hTime">30</b>s</div></div>
 <div class="tbar"><div id="fill"></div></div>
 <div class="body">
 <div class="card" id="sStart">
 <h2>¿Cómo se juega?</h2>
-<p>• 10 casos de análisis.<br>• 30 seg por nivel.<br>• 100 pts + bonus de velocidad + bonus de racha.<br>• Al final obtienes tu puntaje, ranking local y link para compartir.</p>
+<p>• 10 casos al azar: 5 de operación y soporte y 5 de fundamentos. Cada partida cambia.<br>• 30 seg por nivel.<br>• 100 pts + bonus de velocidad + bonus de racha.<br>• Al final obtienes tu puntaje, ranking local y link para compartir.</p>
 <input type="text" id="nick" maxlength="30" placeholder="Tu nombre (ej: Alejo Goo)">
 <button class="btn btn-g" id="bStart">▶ Empezar reto</button>
 <a href="index.html" style="display:block;text-align:center;margin-top:10px;font-size:.85rem;color:#1a73e8">← Volver al curso</a>
@@ -78,7 +78,7 @@ footer{text-align:center;font-size:.75rem;color:#64748b;padding:14px}
 <a href="index.html" style="display:block;text-align:center;margin-top:10px;font-size:.85rem;color:#1a73e8">← Repasar el curso</a>
 </div>
 </div>
-<footer>Reto Goo</footer>
+<footer>Reto Goo · un solo archivo, sin internet requerido · comparte el archivo juego.html o el link</footer>
 </div>
 <script>
 const Q=[
@@ -91,20 +91,45 @@ const Q=[
 {q:"HTTP 200 con {isError:true, message:'guía inválida'}. ¿Qué hace la app?",o:["Avanza a éxito por el 200","Muestra message, no avanza, espera corrección","Cambia el token solo"],a:1,e:"Status dice si llegó; isError dice si el negocio aceptó. true → messageError y no avanza."},
 {q:"Recibes 401 y luego 404. ¿Interpretación?",o:["401=éxito, 404=parcial","401=no autorizado (renovar token) y 404=no encontrada","401=sin internet"],a:1,e:"401 renueva/inicia sesión, 404 la guía no existe, 400 dato inválido, 500 reintenta."},
 {q:"Token de 70 min y POST rechazado por autorización. ¿Causa?",o:["Token dura ~60 min en Authorization: Bearer; hay que renovarlo","Token permanente, falla el mapa","Falla la impresora"],a:0,e:"TokenManager ~60 min, header Bearer, reintenta 3 veces."},
-{q:"Aliado en sótano sin señal procesa entrega. ¿Qué hace la app?",o:["Pierde evidencia","Guarda en Room (carga-offline/guias_offline) y sincroniza con red","Marca fallida definitiva"],a:1,e:"Offline: guarda en Room y sincroniza después."}];
+{q:"Aliado en sótano sin señal procesa entrega. ¿Qué hace la app?",o:["Pierde evidencia","Guarda en Room (carga-offline/guias_offline) y sincroniza con red","Marca fallida definitiva"],a:1,e:"Offline: guarda en Room y sincroniza después."},
+// Tim Goo en un dibujo
+{q:"En el viaje del paquete, ¿en qué tramos acompaña la app Tim Goo al colaborador?",o:["Solo en la entrega al destinatario","En la recogida, el tránsito por Coordinadora y la entrega","Solo cuando el remitente crea el pedido"],a:1,e:"La app trabaja en las 3 paradas del medio: Recogida (primera milla), Coordinadora (traslados y puntos aliados) y Entrega (última milla)."},
+{q:"Una compañera de operación pregunta qué es «Room». ¿Cómo se lo explicas?",o:["La libreta del celular: guarda el trabajo mientras no hay señal","Un tablero en vivo en la nube con la carga de trabajo","El servicio que procesa los pagos con tarjeta"],a:0,e:"Room = libreta del celular. Firestore = tablero en vivo. Remote Config = interruptores a distancia."},
+// Operación y soporte · Un día del Goo
+{c:"op",q:"Un Goo recién inicia sesión y la app le dice «Debes conectarte a un grupo de trabajo». ¿Qué le indicas?",o:["Unirse a un grupo con número de equipo y de móvil","Desinstalar y volver a instalar la app","Esperar a que la carga de trabajo llegue sola"],a:0,e:"Sin grupo de trabajo no puede operar. Se une con número de equipo y de móvil; la carga llega filtrada por equipo y terminal."},
+{c:"op",q:"Al terminar la ruta, un Goo tiene 3 entregas hechas sin señal. ¿Qué debe hacer antes de cerrar sesión?",o:["Borrar los datos de la app para liberar espacio","Con señal, ir a Carga de trabajo → Sincronizar","Nada: se envían solas aunque nunca tenga señal"],a:1,e:"Lo pendiente vive solo en ese celular. Con señal: Sincronizar. Cerrar sesión también necesita señal."},
+{c:"op",q:"Un líder pregunta dónde ve el Goo el dinero que tiene pendiente por legalizar. ¿Qué respondes?",o:["En Cuadre de dineros → Bolsillo","En Opciones de impresión","En el detalle de cada guía"],a:0,e:"Cuadre de dineros: Bolsillo muestra el saldo pendiente por legalizar; Histórico lo detalla por fecha, guía, tipo de recaudo y valor."},
+{c:"op",q:"Sin señal, ¿cuál de estas acciones SÍ puede completar el Goo?",o:["Cobrar con OnePay","Marcar una entrega normal como fallida","Reordenar la ruta"],a:1,e:"Una entrega normal (efectiva o fallida) se guarda y se envía después. Pagos digitales, reordenar, sincronizar y cerrar sesión necesitan señal."},
+// Operación y soporte · Cuando no se puede entregar
+{c:"op",q:"El destinatario recibe solo 2 de las 3 unidades de una guía sin recaudo. ¿Qué camino toma el Goo?",o:["Marcar toda la guía como fallida","Entrega parcial: lee las 2 unidades y pone causal a la faltante","Entrega efectiva y lo anota en observaciones"],a:1,e:"«Entregar unidades inferiores a las autorizadas»: lee lo que sí entrega y elige la causal del resto. Queda registro de unidades entregadas y fallidas."},
+{c:"op",q:"Una guía con recaudo llega con unidades faltantes. ¿Qué hace la app?",o:["Permite la entrega parcial igual que otras guías","No deja entregarla incompleta y pide contactar al líder de plataforma","La marca efectiva y el faltante se cobra después"],a:1,e:"«Esta guía solo puede ser entregada si está completa, comunicarse con líder de plataforma.»"},
+{c:"op",q:"Al marcar una fallida aparece «Para enviar la guia, debe agregar causal». ¿Qué falta?",o:["Elegir una causal de la lista","Tener señal de internet","Tomar la firma del destinatario"],a:0,e:"Sin causal no se envía la fallida. La lista de causales está copiada en el celular, así que funciona sin señal."},
+{c:"op",q:"¿Qué evidencia se guarda SIEMPRE en una entrega fallida, sin importar la causal?",o:["La firma del destinatario","La ubicación GPS (coordenadas)","Una foto de la fachada"],a:1,e:"Las coordenadas se guardan siempre. Foto y firma dependen de lo que exija cada causal."},
+{c:"op",q:"Tras una fallida con causal 701, el destinatario llama porque recibió un WhatsApp. ¿Es normal?",o:["No, debe ser un mensaje falso","Sí: la causal 701 envía un WhatsApp con guía, dirección y foto, si está activado","Sí, pero eso solo pasa en recogidas"],a:1,e:"La causal 701 dispara un WhatsApp al destinatario (si está activado) con la guía, la dirección y la foto de la visita."},
+{c:"op",q:"Un Goo ve de nuevo una guía que ayer marcó fallida y el aviso «¡Nuevos servicios con solución!». ¿Qué pasó?",o:["Es un error y debe ignorarla","Se gestionó una solución a la novedad y la guía volvió a su ruta","La app duplicó la guía por falta de señal"],a:1,e:"Después de una fallida se gestiona una solución y la guía vuelve a la carga marcada «con solución»."},
+// Operación y soporte · Problemas comunes
+{c:"op",q:"Un Goo con entregas sin sincronizar dice que la app está lenta y quiere desinstalarla. ¿Qué le dices?",o:["Adelante, al reinstalar recupera todo","Primero sincronizar: si desinstala o borra datos, esas entregas se pierden","Que borre los datos de la app, eso no afecta"],a:1,e:"Lo pendiente vive solo en el celular. Nunca desinstalar ni borrar datos antes de sincronizar."},
+{c:"op",q:"Reportan «Problemas de Comunicación entre el dispositivo y el servidor… Status movil: 101». ¿Mejor primera respuesta?",o:["Reintentar en unos minutos; si persiste, escalar con captura, guía y hora","Pedir que cambie la contraseña","Configurar otra impresora"],a:0,e:"La app no recibió respuesta válida del servidor. Reintentar; si sigue, escalar con captura, guía, hora, equipo y terminal."},
+{c:"op",q:"Al imprimir sale «Error de conexión. Verifica la impresora». ¿Qué revisas primero?",o:["Que esté encendida, con batería, cerca y seleccionada","La contraseña del Goo","El grupo de trabajo del Goo"],a:0,e:"La app no llega a la impresora: encenderla, revisar batería, acercarla y volver a seleccionarla en Opciones de impresión."},
+{c:"op",q:"Sin señal, un Goo intenta entregar una guía de retorno y ve «Debes tener conexión a internet para realizar la entrega.» ¿Qué haces?",o:["Marcarla fallida para salir del paso","Buscar señal y reintentar: esas guías necesitan internet","Tocar Sincronizar aunque no haya señal"],a:1,e:"Las guías de retorno y las de recaudo (salvo terminales habilitadas) no se entregan sin señal."},
+{c:"op",q:"Al marcar fallida sale «Es necesario que habilites tu ubicación para poder continuar.» ¿Solución?",o:["Encender el GPS y dar permisos de ubicación y cámara a Tim Goo","Cerrar sesión y volver a entrar","Elegir otra causal que no pida foto"],a:0,e:"GPS apagado o permiso negado. Ubicación y cámara son necesarias para la evidencia."},
+{c:"op",q:"Al iniciar sesión aparece «Ya se encuentra autenticado en otro dispositivo…». ¿Qué conviene verificar antes de continuar?",o:["Que el otro celular no tenga pendientes sin sincronizar","Que la impresora esté configurada","Que la guía tenga causal 701"],a:0,e:"Si continúa, la sesión se cierra en el otro celular. Lo pendiente de ese celular debe sincronizarse primero."}];
+// Preguntas por partida: 5 de fundamentos/técnico + 5 de operación y soporte, al azar
+const POR_PARTIDA={base:5,op:5};
 const BACKEND_URL=""; // pega aquí tu URL de Apps Script / Firebase para guardar resultados
 let G=[],i=0,pts=0,hits=0,streak=0,timer=null,left=30,nick="Goo",t0=0;
 const $=id=>document.getElementById(id);
 const qp=new URLSearchParams(location.search);const pre=qp.get('u');
 if(pre){nick=pre.slice(0,30);window.addEventListener('DOMContentLoaded',()=>{$('nick').value=nick;});}
 function shuffle(a){for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a;}
-function buildGame(){G=shuffle([...Q]).map(x=>{const idx=shuffle(x.o.map((_,k)=>k));return{q:x.q,o:idx.map(k=>x.o[k]),a:idx.indexOf(x.a),e:x.e};});}
+function buildGame(){const base=shuffle(Q.filter(x=>x.c!=="op")).slice(0,POR_PARTIDA.base),op=shuffle(Q.filter(x=>x.c==="op")).slice(0,POR_PARTIDA.op);
+G=shuffle([...base,...op]).map(x=>{const idx=shuffle(x.o.map((_,k)=>k));return{q:x.q,o:idx.map(k=>x.o[k]),a:idx.indexOf(x.a),e:x.e,c:x.c};});}
 function start(){nick=($('nick').value||pre||"Aliado Goo").trim().slice(0,30);i=0;pts=0;hits=0;streak=0;t0=Date.now();buildGame();
 $('sStart').classList.add('hidden');$('sEnd').classList.add('hidden');$('sQuiz').classList.remove('hidden');level();}
 function level(){clearInterval(timer);left=30;$('hTime').textContent=left;
 $('hLvl').textContent=(i+1);$('hPts').textContent=pts;$('hStreak').textContent=streak;
 $('fill').style.width=(i/G.length*100)+'%';
-$('qLvl').textContent="NIVEL "+(i+1)+" / "+G.length;$('qTxt').textContent=G[i].q;$('qExp').style.display='none';$('bNext').classList.add('hidden');
+$('qLvl').textContent="NIVEL "+(i+1)+" / "+G.length+(G[i].c==="op"?" · OPERACIÓN Y SOPORTE":" · FUNDAMENTOS");$('qTxt').textContent=G[i].q;$('qExp').style.display='none';$('bNext').classList.add('hidden');
 $('qOpts').innerHTML=G[i].o.map((op,j)=>`<button class="opt" data-j="${j}">${op}</button>`).join('');
 document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.j));
 timer=setInterval(()=>{left--;$('hTime').textContent=left;if(left<=0)answer(-1);},1000);}
@@ -120,8 +145,8 @@ function end(){$('sQuiz').classList.add('hidden');$('sEnd').classList.remove('hi
 let msg=pts>=1000?"🌟 Leyenda Goo":pts>=700?"🎉 Aliado experto":"💪 Sigue practicando";
 let secs=Math.round((Date.now()-t0)/1000);
 $('eTitle').textContent=msg;$('eScore').textContent=`${nick}: ${pts} pts · ${hits}/${G.length} aciertos · ${secs}s`;
-let r=JSON.parse(localStorage.getItem('gooRank')||'[]');r.push({n:nick,p:pts});r.sort((a,b)=>b.p-a.p);r=r.slice(0,5);
-localStorage.setItem('gooRank',JSON.stringify(r));$('eRank').innerHTML=r.map(x=>`<li><span>${x.n}</span><span>${x.p} pts</span></li>`).join('');
+let r=[];try{r=JSON.parse(localStorage.getItem('gooRank')||'[]');}catch(e){}r.push({n:nick,p:pts});r.sort((a,b)=>b.p-a.p);r=r.slice(0,5);
+try{localStorage.setItem('gooRank',JSON.stringify(r));}catch(e){}$('eRank').innerHTML=r.map(x=>`<li><span>${x.n}</span><span>${x.p} pts</span></li>`).join('');
 saveResult({nombre:nick,puntos:pts,aciertos:hits,total:G.length,segundos:secs,fecha:new Date().toISOString(),origen:pre||"directo"});}
 async function saveResult(d){if(!BACKEND_URL)return;try{await fetch(BACKEND_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(d)});}catch(e){}}
 function baseUrl(){return location.href.split('?')[0];}
